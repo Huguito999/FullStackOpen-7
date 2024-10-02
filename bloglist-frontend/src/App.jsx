@@ -6,11 +6,14 @@ import Notification from './components/Notification';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Blog from './components/Blog';
+import UsersList from './components/UserList';
 import { fetchBlogs, createBlog } from './redux/blogsSlice';
+import { fetchUsers } from './redux/userSlice';
 
 const App = () => {
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blogs);
+  const users = useSelector((state) => state.user.users); 
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +24,10 @@ const App = () => {
     message: null,
     type: null,
   });
+
+  useEffect(() => {
+    dispatch(fetchUsers()); 
+  }, [dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
@@ -51,18 +58,16 @@ const App = () => {
       showNotification('Wrong credentials', 'error');
     }
   };
-  
 
   const handleCreateBlog = async (blog) => {
     try {
-        await dispatch(createBlog(blog)); 
-        dispatch(fetchBlogs()); 
-        showNotification('Blog added successfully');
+      await dispatch(createBlog(blog)); 
+      dispatch(fetchBlogs()); 
+      showNotification('Blog added successfully');
     } catch (exception) {
-        showNotification('Error adding blog', 'error');
+      showNotification('Error adding blog', 'error');
     }
-};
-  console.log('Blogs:', blogs);
+  };
 
   const handleLike = async (blog) => {
     try {
@@ -146,6 +151,9 @@ const App = () => {
           />
         ))}
       </div>
+
+      
+      <UsersList />
     </div>
   );
 };
