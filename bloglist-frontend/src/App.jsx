@@ -39,14 +39,11 @@ const App = () => {
     }, 5000);
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       setUser(user);
-      setUsername('');
-      setPassword('');
       blogService.setToken(user.token);
       dispatch(fetchBlogs());
       showNotification('Login successful');
@@ -54,6 +51,7 @@ const App = () => {
       showNotification('Wrong credentials', 'error');
     }
   };
+  
 
   const handleCreateBlog = async (blog) => {
     try {
