@@ -1,39 +1,84 @@
-import axios from 'axios'
-const baseUrl = '/api/blogs'
+import axios from 'axios';
+const baseUrl = '/api/blogs';
 
-let token = null
+let token = null;
 
 const setToken = (newToken) => {
-  token = `Bearer ${newToken}`
-}
+  token = `Bearer ${newToken}`;
+};
 
 const getAll = async () => {
-  const config = {
-    headers: { Authorization: token },
+  try {
+    const config = {
+      headers: { Authorization: token },
+    };
+    const response = await axios.get(baseUrl, config);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching blogs:', error);
+    throw error;
   }
-  const response = await axios.get(baseUrl, config)
-  return response.data
-}
+};
 
 const create = async (newBlog) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = await axios.post(baseUrl, newBlog, config);
-  return response.data;
+  try {
+    const config = {
+      headers: { Authorization: token },
+    };
+    const response = await axios.post(baseUrl, newBlog, config);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating blog:', error);
+    throw error;
+  }
 };
 
 const update = async (id, updatedBlog) => {
-  const config = {
-    headers: { Authorization: token },
+  try {
+    const config = {
+      headers: { Authorization: token },
+    };
+    const response = await axios.put(`${baseUrl}/${id}`, updatedBlog, config);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    throw error;
   }
-  const response = await axios.put(`${baseUrl}/${id}`, updatedBlog, config)
-  return response.data
-}
+};
+
 const remove = async (id) => {
-  const config = {
-    headers: { Authorization: token },
+  try {
+    const config = {
+      headers: { Authorization: token },
+    };
+    await axios.delete(`${baseUrl}/${id}`, config);
+  } catch (error) {
+    console.error('Error deleting blog:', error);
+    throw error;
   }
-  await axios.delete(`${baseUrl}/${id}`, config)
-}
-export default { getAll, setToken, create, update, remove }
+};
+
+const getComments = async (id) => {
+  try {
+    const response = await axios.get(`/api/blogs/${id}/comments`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    throw error;
+  }
+};
+
+const addComment = async (id, comment) => {
+  try {
+    const config = {
+      headers: { Authorization: token },
+    };
+    const response = await axios.post(`/api/blogs/${id}/comments`, { comment }, config);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    throw error;
+  }
+};
+
+export default { getAll, setToken, create, update, remove, getComments, addComment };
