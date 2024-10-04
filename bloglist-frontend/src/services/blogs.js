@@ -60,7 +60,7 @@ const remove = async (id) => {
 
 const getComments = async (id) => {
   try {
-    const response = await axios.get(`/api/blogs/${id}/comments`);
+    const response = await axios.get(`${baseUrl}/${id}/comments`);
     return response.data;
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -73,7 +73,7 @@ const addComment = async (id, comment) => {
     const config = {
       headers: { Authorization: token },
     };
-    const response = await axios.post(`/api/blogs/${id}/comments`, { comment }, config);
+    const response = await axios.post(`${baseUrl}/${id}/comments`, { comment }, config);
     return response.data;
   } catch (error) {
     console.error('Error adding comment:', error);

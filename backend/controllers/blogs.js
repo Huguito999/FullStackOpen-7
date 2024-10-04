@@ -1,49 +1,56 @@
-const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const userExtractor = require("../utils/middleware").userExtractor;
 
 router.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
-
-  response.json(blogs);
+  try {
+    const blogs = await Blog.find({}).populate("user", {
+      username: 1,
+      name: 1,
+    });
+    response.json(blogs);
+  } catch (error) {
+    response.status(500).json({ error: "Failed to fetch blogs" });
+  }
 });
 
-router.post("/", userExtractor, async (request, response) => {
-  const blog = new Blog(request.body);
+router.post("/:id/comments", async (request, response) => {
+  console.log("Comentario recibido:", request.body);
+  try {
+    const blog = await Blog.findById(request.params.id);
+    if (!blog) {
+      return response.status(404).json({ error: "Blog not found" });
+    }
 
-  const user = request.user;
+    const comment = request.body.comment;
+    if (!comment) {
+      return response.status(400).json({ error: "Comment content missing" });
+    }
 
-  if (!user) {
-    return response.status(403).json({ error: "user missing" });
+    blog.comments.push(comment);
+    const updatedBlog = await blog.save();
+    response.status(201).json(updatedBlog);
+  } catch (error) {
+    console.error("Error al agregar comentario:", error);
+    response.status(500).json({ error: "Failed to add comment" });
   }
-
-  if (!blog.title || !blog.url) {
-    return response.status(400).json({ error: "title or url missing" });
-  }
-
-  blog.likes = blog.likes | 0;
-  blog.user = user;
-  user.blogs = user.blogs.concat(blog._id);
-
-  await user.save();
-
-  const savedBlog = await blog.save();
-
-  response.status(201).json(savedBlog);
 });
+
 router.get("/:id/comments", async (request, response) => {
-  const blog = await Blog.findById(request.params.id);
-  if (!blog) {
-    return response.status(404).json({ error: "Blog not found" });
+  try {
+    const blog = await Blog.findById(request.params.id);
+    if (!blog) {
+      return response.status(404).json({ error: "Blog not found" });
+    }
+    response.json(blog.comments);
+  } catch (error) {
+    response.status(500).json({ error: "Failed to fetch comments" });
   }
-  response.json(blog.comments);
 });
 
 router.post("/", userExtractor, async (request, response) => {
   const blog = new Blog(request.body);
-
   const user = request.user;
 
   if (!user) {
@@ -63,32 +70,34 @@ router.post("/", userExtractor, async (request, response) => {
     const savedBlog = await blog.save();
     response.status(201).json(savedBlog);
   } catch (error) {
-    logger.error(error.message);
     response.status(500).json({ error: "failed to create blog" });
   }
 });
 
+// Eliminar un blog
 router.delete("/:id", userExtractor, async (request, response) => {
   const user = request.user;
 
-  const blog = await Blog.findById(request.params.id);
-  if (!blog) {
-    return response.status(204).end();
+  try {
+    const blog = await Blog.findById(request.params.id);
+    if (!blog) {
+      return response.status(204).end();
+    }
+
+    if (user.id.toString() !== blog.user.toString()) {
+      return response.status(403).json({ error: "user not authorized" });
+    }
+
+    await blog.deleteOne();
+    user.blogs = user.blogs.filter(
+      (b) => b._id.toString() !== blog._id.toString()
+    );
+    await user.save();
+
+    response.status(204).end();
+  } catch (error) {
+    response.status(500).json({ error: "Failed to delete blog" });
   }
-
-  if (user.id.toString() !== blog.user.toString()) {
-    return response.status(403).json({ error: "user not authorized" });
-  }
-
-  await blog.deleteOne();
-
-  user.blogs = user.blogs.filter(
-    (b) => b._id.toString() !== blog._id.toString()
-  );
-
-  await user.save();
-
-  response.status(204).end();
 });
 
 router.put("/:id", async (request, response) => {
