@@ -9,7 +9,7 @@ const User = () => {
   const users = useSelector((state) => state.user.users);
   const blogs = useSelector((state) => state.blogs);
 
-  const user = users.find((user) => user.id === id);
+  const user = users.find((user) => user?.id === id);
 
   useEffect(() => {
     if (!users.length) {
@@ -21,7 +21,7 @@ const User = () => {
     return <div>Loading user data...</div>;
   }
 
-  const userBlogs = blogs.filter((blog) => blog.user.id === user.id);
+  const userBlogs = blogs.filter((blog) => blog.user?.id === user?.id);
 
   return (
     <div>
