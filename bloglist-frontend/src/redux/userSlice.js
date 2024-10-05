@@ -52,7 +52,6 @@ export const initializeUser = () => {
   };
 };
 
-
 export const fetchUsers = () => {
   return async (dispatch) => {
     try {

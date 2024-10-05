@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import notificationReducer from './notificationSlice';
-import blogsReducer from './blogsSlice'; 
+import blogsReducer from './blogsSlice';
 import userReducer from './userSlice';
 const store = configureStore({
   reducer: {

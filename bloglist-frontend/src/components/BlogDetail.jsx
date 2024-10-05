@@ -14,7 +14,6 @@ const BlogDetail = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
 
-  // Fetch comments on mount and whenever the blog changes
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -34,8 +33,7 @@ const BlogDetail = () => {
     event.preventDefault();
     try {
       await blogService.addComment(id, newComment);
-      setNewComment(''); // Limpiar el campo de comentario
-      // Fetch comments again to get the updated list
+      setNewComment('');
       const updatedComments = await blogService.getComments(id);
       setComments(updatedComments);
       dispatch(setNotification('Comment added successfully', 'success'));
@@ -71,7 +69,7 @@ const BlogDetail = () => {
         <strong>Likes:</strong> {blog.likes}
       </p>
       <button onClick={handleLike}>Like</button>
-      
+
       <h3>Comments</h3>
       <ul>
         {comments.map((comment, index) => (

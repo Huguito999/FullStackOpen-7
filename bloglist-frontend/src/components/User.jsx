@@ -8,7 +8,7 @@ const User = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.user.users);
   const blogs = useSelector((state) => state.blogs);
-  
+
   const user = users.find((user) => user.id === id);
 
   useEffect(() => {

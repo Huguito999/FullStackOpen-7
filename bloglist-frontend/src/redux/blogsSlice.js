@@ -1,4 +1,3 @@
-// blogsSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import blogService from '../services/blogs';
 
@@ -14,13 +13,13 @@ const blogsSlice = createSlice({
     },
     updateBlog(state, action) {
       const id = action.payload.id;
-      const blogToUpdate = state.find(blog => blog.id === id);
+      const blogToUpdate = state.find((blog) => blog.id === id);
       if (blogToUpdate) {
         blogToUpdate.likes = action.payload.likes;
       }
     },
     removeBlog(state, action) {
-      return state.filter(blog => blog.id !== action.payload);
+      return state.filter((blog) => blog.id !== action.payload);
     },
   },
 });
@@ -43,7 +42,7 @@ export const createBlog = (newBlog) => {
 
 export const likeBlog = (id) => {
   return async (dispatch, getState) => {
-    const blog = getState().blogs.find(b => b.id === id);
+    const blog = getState().blogs.find((b) => b.id === id);
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
     await blogService.update(id, updatedBlog);
     dispatch(updateBlog(updatedBlog));

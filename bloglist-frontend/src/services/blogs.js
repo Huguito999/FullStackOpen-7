@@ -73,7 +73,11 @@ const addComment = async (id, comment) => {
     const config = {
       headers: { Authorization: token },
     };
-    const response = await axios.post(`${baseUrl}/${id}/comments`, { comment }, config);
+    const response = await axios.post(
+      `${baseUrl}/${id}/comments`,
+      { comment },
+      config
+    );
     return response.data;
   } catch (error) {
     console.error('Error adding comment:', error);
@@ -81,4 +85,12 @@ const addComment = async (id, comment) => {
   }
 };
 
-export default { getAll, setToken, create, update, remove, getComments, addComment };
+export default {
+  getAll,
+  setToken,
+  create,
+  update,
+  remove,
+  getComments,
+  addComment,
+};

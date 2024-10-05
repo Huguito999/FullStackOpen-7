@@ -6,7 +6,7 @@ export default function LoginForm({ handleLogin }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    handleLogin(username, password); 
+    handleLogin(username, password);
     setUsername('');
     setPassword('');
   };
